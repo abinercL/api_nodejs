@@ -3,9 +3,16 @@ import { DatabaseMemory } from "./database_memory.js";
 
 const server = fastify()
 
+const database = new DatabaseMemory()
+
 //criando uma rota que permita criar
-server.post('/videos', () => {
-    return 'hello word'
+server.post('/videos', (request, reply) => {
+    database.create({
+        title: 'Video o1',
+        description: 'Esse é o video 01',
+        duration: 180,
+    })
+    return reply.status(201).send()
 })
 
 //criando rota que permite pegar informaçoes por exemplo
