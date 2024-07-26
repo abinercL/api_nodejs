@@ -1,35 +1,54 @@
 import { fastify } from "fastify";
-import { DatabaseMemory } from "./database_memory.js";
+import { DatabaseMemory } from "./database_memory.js"
 
 const server = fastify()
 
 const database = new DatabaseMemory()
 
-//criando uma rota que permita criar
-server.post('/videos', (request, reply) => {
+//create
+server.post("/videos", (request, reply) => {
+    const { title, description, duration } = request.body
+
     database.create({
-        title: 'Video o1',
-        description: 'Esse é o video 01',
-        duration: 180,
+        title,
+        description,
+        duration
     })
+
     return reply.status(201).send()
 })
 
-//criando rota que permite pegar informaçoes por exemplo
+//read
 server.get('/videos', () => {
-    return 'hello playng'
+    const videos = database.list()
+
+    console.log(videos)
+
+    return videos
 })
 
-//rota que me permite atualizar informaçoes via normalmente ID
-//chamado de route parameter ex: ID
-server.put('/videos/:id', () => {
-    return 'hello play'
+//update
+server.put('/videos/:id', (request, reply) => {
+    const videoId = request.params.id
+    const { title, description, duration } = request.body
+
+    const video = database.update(videoId, {
+        title,
+        description,
+        duration
+    })
+    return reply.status(204).send()
 })
 
-//rota na qual permite deletar uma escolha por vez por meio por exemplo de um ID
-server.delete('/videos/:id', () => {
-    return 'hello yng'
+//delete
+server.delete('/videos/:id', (request, reply) => {
+    const videoId = request.params.id
+
+    database.delete(videoId)
+
+    return reply.status(204).send()
 })
+
 server.listen({
-    port: 3333
+    port: 3333,
 })
